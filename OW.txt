@@ -1,0 +1,9 @@
+Agenda for the Ten days
+
+1 . Automatd God
+2 . Basic UI
+3 . Session management or Facebook API
+
+Later
+1 . Improving the UI
+2 . Extending it to IOS
