@@ -1,4 +1,4 @@
-package com.example.onlinewolf.onlinewolf;
+package com.example.onlinewolf.onlinewolf.app;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

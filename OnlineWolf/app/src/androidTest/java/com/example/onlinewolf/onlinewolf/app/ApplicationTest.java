@@ -1,4 +1,4 @@
-package com.example.onlinewolf.onlinewolf;
+package com.example.onlinewolf.onlinewolf.app;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

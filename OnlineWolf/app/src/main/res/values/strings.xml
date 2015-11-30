@@ -2,4 +2,6 @@
     <string name="app_name">OnlineWolf</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="button_send">Play</string>
+    <string name="edit_message">Enter Name</string>
 </resources>
