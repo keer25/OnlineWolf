@@ -17,7 +17,8 @@
         android:typeface="sans"
         android:textSize="50dp"
         android:background="#3627ff"
-        android:id="@+id/menu_button"/>
+        android:id="@+id/menu_button"
+        android:onClick="startPlay"/>
 
 
 </LinearLayout>
