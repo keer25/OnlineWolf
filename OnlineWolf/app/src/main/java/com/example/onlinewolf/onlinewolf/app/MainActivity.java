@@ -1,9 +1,11 @@
 package com.example.onlinewolf.onlinewolf.app;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,15 +13,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+    }
+    public final static String EXTRA_MESSAGE = "com.example.onlinewolf.MESSAGE";
+      public void startPlay(View view) {
+          Intent login = new Intent(this, ShowLogin.class);
+          Button button = (Button) findViewById(R.id.menu_play);
+          String message = button.getText().toString();
+          login.putExtra(EXTRA_MESSAGE, message);
+          startActivity(login);
+      }
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
