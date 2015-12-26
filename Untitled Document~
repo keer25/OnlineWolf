@@ -1,0 +1,9 @@
+rails-api requires ruby 1.9.3 or higher
+
+Any of these middlewares can be added via:
+
+config.middleware.use Rack::MethodOverride
+
+config.middleware.delete ::Rack::Sendfile
+
+Removed Rack::Lock middleware due to websocket-rails
