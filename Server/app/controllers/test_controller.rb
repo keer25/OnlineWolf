@@ -11,7 +11,7 @@ class TestController < ApplicationController
 
       # Publish message to the client
       				ws.send "Hello Client, you connected "
-      				ws.send "Ignore this: \n\n #{handshake.inspect} \n\n"
+      				#ws.send "Ignore this: \n\n #{handshake.inspect} \n\n"
     			}
 
     			ws.onclose { puts "Connection closed" }
