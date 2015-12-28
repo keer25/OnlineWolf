@@ -21,4 +21,4 @@ conn.onclose = function(e) {
 document.querySelector('button#fire').onclick = function() {
     conn.send(document.querySelector('#send').value);
     document.querySelector('#send').value = '';
-};
+};};

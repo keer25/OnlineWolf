@@ -19,3 +19,14 @@ May have to switch to a different server
 Using ws://
 Temperory testign with js client
 Removed Rack::Lock middleware
+
+AndroidAsync doesn't perform closing handshake 	
+Using Async Http Client
+
+If Not multithreading for networking
+Add this before setting contentView :
+if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+

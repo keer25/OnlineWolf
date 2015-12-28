@@ -1,9 +1,18 @@
 package com.example.onlinewolf.onlinewolf.app;
 
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.ws.WebSocket;
+import com.ning.http.client.ws.WebSocketTextListener;
+import com.ning.http.client.ws.WebSocketUpgradeHandler;
+
+import java.util.concurrent.ExecutionException;
 
 public class CreateFile extends AppCompatActivity {
 
@@ -11,6 +20,41 @@ public class CreateFile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_file);
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+        AsyncHttpClient c = new AsyncHttpClient();
+        WebSocket w = null;
+        try {
+            w = c.prepareGet("ws://192.168.1.102:8080/")
+                           .execute(new WebSocketUpgradeHandler.Builder().build()).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        w.addWebSocketListener(new WebSocketTextListener() {
+            @Override
+            public void onMessage(String message) {
+                Log.i("WebSocket","I received "+ message);
+            }
+
+            @Override
+            public void onOpen(WebSocket websocket) {
+                Log.i("WebSocket","Opened WebScoket");
+            }
+
+            @Override
+            public void onClose(WebSocket websocket) {
+                Log.i("WebSocket","Closed WebSocket");
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.e("WebSocket","Error");
+            }
+        }).sendMessage("Hello world");
     }
 
     @Override

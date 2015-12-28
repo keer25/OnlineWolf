@@ -1,7 +1,7 @@
 class TestController < ApplicationController
 	def new
 		EM.run { 
-  			EM::WebSocket.run(:host => "127.0.0.1", :port => 8080) do |ws|
+  			EM::WebSocket.run(:host => "192.168.1.102", :port => 8080) do |ws|
   				logger.info "Waiting for handshake"
     			ws.onopen { |handshake|
       				logger.info "WebSocket connection open"
@@ -14,7 +14,7 @@ class TestController < ApplicationController
       				#ws.send "Ignore this: \n\n #{handshake.inspect} \n\n"
     			}
 
-    			ws.onclose { puts "Connection closed" }
+    			ws.onclose {  puts "Connection closed" }
 
     			ws.onmessage { |msg|
       				logger.info "Recieved message: #{msg}"

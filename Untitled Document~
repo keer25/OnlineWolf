@@ -7,3 +7,18 @@ config.middleware.use Rack::MethodOverride
 config.middleware.delete ::Rack::Sendfile
 
 Removed Rack::Lock middleware due to websocket-rails
+
+STARTED USING HEROKU BECAUSE OF NOT BEING ABLE TO ACHEIVE PORT FORWARDING
+
+websocket-rails is more appropriate for non API and using it with a javascript client rather than a native Android client
+
+Switched to em-ruby
+
+em-websocket
+May have to switch to a different server
+Using ws://
+Temperory testign with js client
+Removed Rack::Lock middleware
+
+AndroidAsync doesn't perform closing handshake 	
+Using Async Http Client
