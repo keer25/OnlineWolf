@@ -41,6 +41,3 @@ Using faye-websockets for server side websocket implementation
 deployed at heroku with https://agile-cove-4656.herokuapp.com/
 git push heroku
 heroku run rake db:migrate
-
-Run bundle with
-bundle install --without production

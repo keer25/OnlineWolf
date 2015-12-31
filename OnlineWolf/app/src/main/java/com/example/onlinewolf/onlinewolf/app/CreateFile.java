@@ -18,6 +18,7 @@ public class CreateFile extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String url = "ws://192.168.1.102:8080/";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_file);
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -27,7 +28,7 @@ public class CreateFile extends AppCompatActivity {
         AsyncHttpClient c = new AsyncHttpClient();
         WebSocket w = null;
         try {
-            w = c.prepareGet("ws://192.168.1.102:8080/")
+            w = c.prepareGet(url)
                            .execute(new WebSocketUpgradeHandler.Builder().build()).get();
         } catch (InterruptedException e) {
             e.printStackTrace();

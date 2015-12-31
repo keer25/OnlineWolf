@@ -5,4 +5,6 @@
     <string name="edit_message">Enter Name</string>
     <string name="title_activity_show_login">ShowLogin</string>
     <string name="title_activity_create_file">CreateFile</string>
+    <string name="signup">SIGNUP</string>
+    <string name="login">LOGIN</string>
 </resources>
