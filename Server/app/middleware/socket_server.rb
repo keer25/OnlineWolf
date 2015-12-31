@@ -4,6 +4,7 @@ module Server
     	def initialize(app)
 			@app = app
 			@clients = []
+			Faye::WebSocket.load_adapter('thin')
 		end	
 
 		def call(env)
