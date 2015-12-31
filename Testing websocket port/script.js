@@ -1,4 +1,4 @@
-var conn = new WebSocket('ws://localhost:8080/');
+var conn = new WebSocket('ws://localhost:3000/');
 // The action fired when you're successfully connected to a Websocket
 conn.onopen = function(e) {
     console.log("Connection established!");

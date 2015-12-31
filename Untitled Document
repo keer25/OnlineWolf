@@ -29,4 +29,13 @@ if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+To push sub directory to remote
+git subtree push --prefix output heroku master
+To see the free quota period
+heroku ps -a myappname
 
+To push from one local branch to other git push origin localbranch:remotebranch
+
+Using faye-websockets for server side websocket implementation
+
+deployed at heroku with https://agile-cove-4656.herokuapp.com/
