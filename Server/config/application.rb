@@ -1,7 +1,8 @@
 require File.expand_path('../boot', __FILE__)
-
-require 'rails/all'
-
+require File.expand_path('../../app/middleware/socket_server', __FILE__)
+#require 'socket_server'
+require 'rails/all' 
+#config.middleware.use SocketServer
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -21,6 +22,7 @@ module Server
     # config.i18n.default_locale = :de
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
+    config.middleware.use Server::SocketServer
     config.active_record.raise_in_transactional_callbacks = true
   end
 end
