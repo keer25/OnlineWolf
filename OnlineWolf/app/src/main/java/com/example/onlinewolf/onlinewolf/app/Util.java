@@ -22,7 +22,7 @@ public class Util extends AppCompatActivity{
     private Util() {
     }
 
-    String url = "http://192.168.1.102:3000/";
+    String url = "http://192.168.1.102:3000";
 
     public boolean isConnected(){
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
