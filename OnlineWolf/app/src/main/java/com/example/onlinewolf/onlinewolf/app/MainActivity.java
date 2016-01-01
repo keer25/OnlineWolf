@@ -29,24 +29,6 @@ public class MainActivity extends AppCompatActivity {
           startActivity(login);
       }
 
-    public boolean isConnected(){
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()){
-            return true;
-        }
-        else{
-            Log.e("Network Error","Unable to connect to network" );
-            // TODO Positioning Toasts
-            Toast toast = Toast.makeText(getApplicationContext(),"Check Network Connection",Toast.LENGTH_SHORT);
-            toast.show();
-            return false;
-        }
-    }
-
-
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

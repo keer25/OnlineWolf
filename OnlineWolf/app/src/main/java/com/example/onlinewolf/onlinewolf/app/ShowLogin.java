@@ -3,6 +3,7 @@ package com.example.onlinewolf.onlinewolf.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -10,9 +11,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import org.json.JSONObject;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ShowLogin extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.example.onlinewolf.MESSAGE";
@@ -38,7 +44,7 @@ public class ShowLogin extends AppCompatActivity {
         setContentView(R.layout.login);
 
     }
-    public void createUser(View view){
+    private void authUser(View view){
         EditText edit = (EditText) findViewById(R.id.emailLogin);
         String email =  edit.getText().toString();
         edit = (EditText) findViewById(R.id.passwordLogin);
@@ -47,7 +53,7 @@ public class ShowLogin extends AppCompatActivity {
         //Send http request with proper params
     }
 
-    public void authUser(View view){
+    private void createUser(View view){
         EditText edit = (EditText) findViewById(R.id.nameSignup);
         String name = edit.getText().toString();
         edit = (EditText) findViewById(R.id.emailSignup);
@@ -57,12 +63,29 @@ public class ShowLogin extends AppCompatActivity {
         edit = (EditText) findViewById(R.id.confirmSignup);
         String conf_password = edit.getText().toString();
         //Perform validation
+        Util util = Util.getInstance();
+        final URL url;
+        try {
+            url = new URL(util.url);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        private class DownloadWebpageTask extends AsyncTask<JSONObject,Void,Void>{
+
+            @Override
+            protected void doInBackground(JSONObject json){
+                try{
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setDoOutput(true);
+                }
+            }
+        }
         //Send http request with proper params
     }
-    public void signup(View view){
+    private void signup(View view){
         setContentView(R.layout.signup);
     }
-    public void createUserFile(View view){
+    private void createUserFile(View view){
         EditText user_name = (EditText) findViewById(R.id.editText);
         String name = user_name.getText().toString();
         EditText pass = (EditText) findViewById(R.id.editText2);
