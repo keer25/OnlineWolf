@@ -1,7 +1,6 @@
 //User data in file name "user.txt"
 package com.example.onlinewolf.onlinewolf.app;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,22 +11,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+
+import javax.xml.transform.Result;
 
 public class ShowLogin extends AppCompatActivity {
-    public final static String EXTRA_MESSAGE = "com.example.onlinewolf.MESSAGE";
+    Util util = Util.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,13 +42,15 @@ public class ShowLogin extends AppCompatActivity {
             }
         }
         }
-
+// <ethod called on pressing login
     public void login(View view){
         Log.i("VIEW", "setting login view..");
         setContentView(R.layout.login);
 
     }
+//Method on submit from login page
     public void authUser(View view){
+        Log.i("VIEW","Logging in...");
         EditText edit = (EditText) findViewById(R.id.emailLogin);
         String email =  edit.getText().toString();
         edit = (EditText) findViewById(R.id.passwordLogin);
@@ -59,65 +58,65 @@ public class ShowLogin extends AppCompatActivity {
         //TODO Bring some validations to client Side
         //Send http request with proper params
     }
-
-    public void createUser(View view) {
+//Method on submit form signup page
+    public void createUser(View view) throws JSONException {
         Log.i("VIEW", "Signing up...");
-        Map map = new HashMap();
+        JSONObject json  = new JSONObject();
         EditText edit = (EditText) findViewById(R.id.nameSignup);
-        map.put("name", edit.getText().toString());
+        json.accumulate("name", edit.getText().toString());
         edit = (EditText) findViewById(R.id.emailSignup);
-        map.put("email", edit.getText().toString());
+        json.accumulate("email", edit.getText().toString());
         edit = (EditText) findViewById(R.id.passwordSignup);
-        map.put("password", edit.getText().toString());
+        json.accumulate("password", edit.getText().toString());
         edit = (EditText) findViewById(R.id.confirmSignup);
-        map.put("conf_password", edit.getText().toString());
-        Map main = new HashMap();
-        main.put("user",map);
+        json.accumulate("conf_password", edit.getText().toString());
+        JSONObject main = new JSONObject();
+        main.accumulate("user", json);
         //Perform validation
-        Log.i("GEN", "Map created");
-        String json = new JSONObject(map).toString();
-        Log.i("GEN", "JSON created "+json);
-        Util util = Util.getInstance();
-        new PostUser().execute(json);
-        if (util.isConnected()){
-            Log.i("GEN","Connected");
-        }
+        String jsonstr = main.toString();
+        new PostUser().execute(jsonstr);
     }
-        class PostUser extends AsyncTask<String,Void,Void>{
+        class PostUser extends AsyncTask<String, Void, Void> {
+
+            //Util util = Util.getInstance();
 
             @Override
             protected Void doInBackground(String... json) {
-                HttpURLConnection urlConnection = null;
                 try {
-                    Util util = Util.getInstance();
-                    URL url = new URL(util.url + "/users");
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                } catch (IOException e) {
+                    byte[] arr = json[0].getBytes("UTF-8");
+                    int len = arr.length;
+                    if (util.isConnected()) {
+                        HttpURLConnection urlConnection = null;
+                        try {
+                            //Making connections
+                            URL url = new URL(util.url + "/users");
+                            urlConnection = (HttpURLConnection) url.openConnection();
+                            // Configuring headers
+                            urlConnection.setRequestProperty("Content-Type", "application/json");
+                            urlConnection.setDoOutput(true);
+                            urlConnection.setFixedLengthStreamingMode(len);
+                            //Writing to output stream
+                            BufferedOutputStream outputStream = new BufferedOutputStream(urlConnection.getOutputStream());
+                            outputStream.write(arr);
+                            urlConnection.disconnect();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (urlConnection != null) {
+                                urlConnection.disconnect();
+                            }
+                        }
+                    }
+                } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-                try{
 
-                    urlConnection.setRequestProperty("Content-Type", "application/json");
-                    urlConnection.setRequestProperty("Accept", "application/json");
-                    //urlConnection.connect();
-                    urlConnection.setDoOutput(true);
-                    //urlConnection.connect();
-                    urlConnection.setChunkedStreamingMode(0);
-                    urlConnection.connect();
-                    Log.i("GEN",urlConnection.getContentEncoding());
-                    //Log.i("GEN",urlConnection.toString());
-                    ObjectOutputStream outputStream = new ObjectOutputStream(urlConnection.getOutputStream());
-                    outputStream.writeObject(json[0]);
-                    //Reading inputstream
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (urlConnection == null) Log.e("POST","Error in posting content");
-                    urlConnection.disconnect();
-                }
                 return null;
             }
-        //Send http request with proper params
+            @Override
+            protected void onPostExecute(Void v){
+              util.showToast("Account Created");
+            }
 
     }
     public void signup(View view){
@@ -141,7 +140,7 @@ public class ShowLogin extends AppCompatActivity {
         Intent intent = new Intent(this, CreateFile.class);
         Button button = (Button) findViewById(R.id.confirmbutton);
         String message = button.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
+        intent.putExtra(Util.EXTRA_MESSAGE, message);
         startActivity(intent);
 
     }

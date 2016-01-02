@@ -44,3 +44,5 @@ heroku run rake db:migrate
 
 Run bundle with
 bundle install --without production
+
+Using charset UTF-8 for http request entities
