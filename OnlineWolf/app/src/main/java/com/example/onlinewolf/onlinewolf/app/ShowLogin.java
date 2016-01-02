@@ -1,7 +1,10 @@
 //User data in file name "user.txt"
 package com.example.onlinewolf.onlinewolf.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +21,7 @@ import org.json.JSONObject;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -69,11 +74,12 @@ public class ShowLogin extends AppCompatActivity {
         edit = (EditText) findViewById(R.id.passwordSignup);
         json.accumulate("password", edit.getText().toString());
         edit = (EditText) findViewById(R.id.confirmSignup);
-        json.accumulate("conf_password", edit.getText().toString());
+        json.accumulate("password_confirmation", edit.getText().toString());
         JSONObject main = new JSONObject();
         main.accumulate("user", json);
         //Perform validation
         String jsonstr = main.toString();
+        Log.i("JSON",jsonstr);
         new PostUser().execute(jsonstr);
     }
         class PostUser extends AsyncTask<String, Void, Void> {
@@ -82,41 +88,46 @@ public class ShowLogin extends AppCompatActivity {
 
             @Override
             protected Void doInBackground(String... json) {
-                try {
-                    byte[] arr = json[0].getBytes("UTF-8");
-                    int len = arr.length;
-                    if (util.isConnected()) {
-                        HttpURLConnection urlConnection = null;
-                        try {
-                            //Making connections
-                            URL url = new URL(util.url + "/users");
-                            urlConnection = (HttpURLConnection) url.openConnection();
-                            // Configuring headers
-                            urlConnection.setRequestProperty("Content-Type", "application/json");
-                            urlConnection.setDoOutput(true);
-                            urlConnection.setFixedLengthStreamingMode(len);
-                            //Writing to output stream
-                            BufferedOutputStream outputStream = new BufferedOutputStream(urlConnection.getOutputStream());
-                            outputStream.write(arr);
+                ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                Log.i("Network info ",networkInfo.getState().toString());
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    HttpURLConnection urlConnection = null;
+                    try {
+                        //Making connections
+                        URL url = new URL(util.url + "/users");
+                        urlConnection = (HttpURLConnection) url.openConnection();
+                        Log.i("URl",url.toString());
+                        Log.i("Connection",urlConnection.toString());
+                        // Configuring headers
+                        urlConnection.setRequestProperty("Content-Type", "application/json");
+                        urlConnection.setDoOutput(true);
+                        urlConnection.setRequestMethod("POST");
+                        Log.i("Request method",urlConnection.getRequestMethod());
+                        //Writing to output stream
+                        OutputStreamWriter wr = new OutputStreamWriter(urlConnection.getOutputStream());
+                        wr.write(json[0]);
+                        wr.flush();
+                        Log.i("Response",urlConnection.getResponseMessage());
+                        urlConnection.disconnect();
+                        //TODO Error handling in response
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (urlConnection != null) {
                             urlConnection.disconnect();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } finally {
-                            if (urlConnection != null) {
-                                urlConnection.disconnect();
-                            }
                         }
                     }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
                 }
+                else
+                    Toast.makeText(getApplicationContext(),"Network Error",Toast.LENGTH_SHORT).show();
 
                 return null;
             }
             @Override
             protected void onPostExecute(Void v){
-              util.showToast("Account Created");
-            }
+                Toast.makeText(getApplicationContext(),"Account Created",Toast.LENGTH_SHORT).show();
+                          }
 
     }
     public void signup(View view){
