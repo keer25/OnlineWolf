@@ -40,4 +40,5 @@
         android:text="@string/signup"
         android:id="@+id/buttonSignup"
         android:onClick="createUser" />
+
 </LinearLayout>

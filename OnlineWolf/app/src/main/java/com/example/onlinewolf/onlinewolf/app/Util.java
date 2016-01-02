@@ -23,6 +23,8 @@ public class Util extends AppCompatActivity{
     }
     public final static String EXTRA_MESSAGE = "com.example.onlinewolf.MESSAGE";
     String url = "http://192.168.1.102:3000";
+    //String url = "http://agile-cove-4656.herokuapp.com";
     String urlw = "ws://192.168.1.102:3000";
+    //String urlw = "ws://agile-cove-4656.herokuapp.com/"
 
 }
