@@ -7,11 +7,6 @@ class UsersControllerTest < ActionController::TestCase
   		:password_confirmation => "foobars"}
   	end
 
-  test "should get new" do
-    get :new
-    assert_response :success
-  end
-
   test "Saving users" do
   	@user = User.new(@hash)
   	assert_difference 'User.count',1 do
