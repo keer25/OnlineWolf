@@ -49,5 +49,5 @@ Using charset UTF-8 for http request entities
 
 Do not use streaming while sending json data
 
-Clearing databases
+Clearing databases	
 rake db:drop db:create db:migrate db:seed
