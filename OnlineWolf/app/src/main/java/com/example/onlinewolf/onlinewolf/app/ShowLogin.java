@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,8 +24,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 
@@ -230,8 +227,6 @@ public class ShowLogin extends AppCompatActivity {
         //if (active_flag == 1) startGame();
     }
         class PostUser extends AsyncTask<String, Void, String> {
-
-            //Util util = Util.getInstance();
 
             @Override
             protected String doInBackground(String... json) {

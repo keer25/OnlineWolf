@@ -1,5 +1,5 @@
 module Server
-	class SocketServer
+	class SocketServer 
    		KEEPALIVE_TIME = 15 # in seconds
     	def initialize(app)
 			@app = app
@@ -10,9 +10,8 @@ module Server
 		def call(env)
 			if Faye::WebSocket.websocket?(env)
 				ws = Faye::WebSocket.new(env)
-				
 				ws.on :open do |event|
-					Rails.logger.info "Websocket Open, #{ws.object_id}"
+					Rails.logger.info "Websocket Open, #{ws.object_id}   the user count is #{User.count}"
 					@clients << ws	
 				end
 				

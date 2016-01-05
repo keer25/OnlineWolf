@@ -19,7 +19,7 @@ public class Util extends AppCompatActivity{
         return ourInstance;
     }
 
-    private Util() {
+    private Util    () {
     }
     public final static String EXTRA_MESSAGE = "com.example.onlinewolf.MESSAGE";
     public static String url = "http://192.168.1.100:3000";
