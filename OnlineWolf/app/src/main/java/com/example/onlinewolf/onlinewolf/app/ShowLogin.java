@@ -84,14 +84,14 @@ public class ShowLogin extends AppCompatActivity {
 
     //Writes string json to the netowrk output Stream and returns the response or -1 in case of exceptions
     //Throws IO exception
-    protected int getResponse(String json) throws IOException {
+    protected int getResponse(String json,String urlstr) throws IOException {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo == null) return -1;
         if (networkInfo.isConnected()) {
             HttpURLConnection conn = null;
             //Making connections
-            URL url = new URL(util.url + "/login");
+            URL url = new URL(urlstr);
             conn = (HttpURLConnection) url.openConnection();
             Log.i("URl", url.toString());
             // Configuring headers
@@ -166,8 +166,9 @@ public class ShowLogin extends AppCompatActivity {
 
     public class Login extends AsyncTask<String,Void,String> {
         protected String doInBackground(String... json) {
+                String urlstr = util.url + "/login" ;
                 try{
-                int code = getResponse(json[0]);
+                int code = getResponse(json[0],urlstr);
                 //TODO Elaborate Error handling in response at the client sid
                 if(code == 201)
                     return "Logged in";
@@ -234,8 +235,9 @@ public class ShowLogin extends AppCompatActivity {
 
             @Override
             protected String doInBackground(String... json) {
+                    String urlstr = util.url + "/signup";
                     try {
-                        int code = getResponse(json[0]);
+                        int code = getResponse(json[0],urlstr);
                         //TODO Elaborate Error handling in response at the client side
                         if(code == 201)
                             return "Account Created";
