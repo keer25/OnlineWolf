@@ -19,18 +19,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 
 
 public class ShowLogin extends AppCompatActivity {
     Util util = Util.getInstance();
+    String email;
+    String password;
+    int active_flag;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Replace with code for checking for cookies
+        active_flag = 0;
         FileInputStream inp = null;
         try{
             inp = openFileInput("user.usr");
@@ -40,216 +49,18 @@ public class ShowLogin extends AppCompatActivity {
             if (inp == null) {
                 setContentView(R.layout.login_signup);
             } else {
-                setContentView(R.layout.activity_create_file);
-            }
-        }
-        }
- // Temp testing for signup
-    public JSONObject signupTest() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.accumulate("name","Keerthana");
-        json.accumulate("email","keerukeerthana8@gmail.com");
-        json.accumulate("password","foobars");
-        json.accumulate("password_confirmation", "foobars");
-        JSONObject main = new JSONObject();
-        main.accumulate("user", json);
-        return main;
-    }
-// Temp testing for login
-    public JSONObject loginTest() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.accumulate("email", "keerukeerthana8@gmail.com");
-        json.accumulate("password", "foobars");
-        return new JSONObject().accumulate("session",json);
-    }
-
-// Method called on pressing login
-    public void login(View view){
-        Log.i("VIEW", "setting login view..");
-        setContentView(R.layout.login);
-
-    }
-//Method on submit from login page
-    public void authUser(View view) throws JSONException{
-        Log.i("VIEW", "Logging in...");
-        //TODO Bring some validations to client Side
-        //Uncomment this while deploying
-        /*
-        JSONObject json = new JSONObject();
-        json.accumulate("email",((EditText) findViewById(R.id.emailLogin)).getText().toString());
-        json.accumulate("password",((EditText) findViewById(R.id.passwordLogin)).getText().toString());
-        JSONObject main = new JSONObject();
-        main.accumulate("session",json);
-        */
-        JSONObject main = loginTest();
-        //Client Side Validations
-        new Login().execute(main.toString());
-    }
-
-    private class Login extends AsyncTask<String,Void,String> {
-        protected String doInBackground(String... json) {
-            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            Log.i("Network info ", networkInfo.getState().toString());
-            if (networkInfo.isConnected()) {
-                HttpURLConnection conn = null;
+                String json = null;
                 try {
-                    //Making connections
-                    URL url = new URL(util.url + "/login");
-                    conn = (HttpURLConnection) url.openConnection();
-                    Log.i("URl", url.toString());
-                    // Configuring headers
-                    conn.setRequestProperty("Content-Type", "application/json");
-                    conn.setDoOutput(true);
-                    conn.setRequestMethod("POST");
-                    Log.i("Request method", conn.getRequestMethod());
-                    //Writing to output stream
-                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                    wr.write(json[0]);
-                    wr.flush();
-                    // 250 Invalid credentials
-                    // 201 Logged in
-                    int code = conn.getResponseCode();
-                    //Log.i("Response",urlConnection.getResponseCode());
-                    conn.disconnect();
-                    //TODO Elaborate Error handling in response at the client side
-
-                    if(code == 201)
-                        return "Logging in..";
-                    else if (code == 250)
-                        return "Invalid Details";
-                    else return "Error in Sending Data. Try again later.";
+                    ObjectInputStream ois = new ObjectInputStream(inp);
+                    json = ois.readUTF();
+                    new LoginExisting().execute(json);
+                    //if (active_flag == 1) startGame();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return "Something Bad happened. Try again later.";
-                } finally {
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
                 }
-            } else
-                return "Check Network Connection";
-        }
-        @Override
-        protected void onPostExecute(String result){
-            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
-            // if (result == "Account Created") setContentView();
-        }
-
-    }
-
-
-
-//Method on submit form signup page
-    public void createUser(View view) throws JSONException {
-
-        Log.i("VIEW", "Signing up...");
-        //Uncomment this on deploying
-        /*
-        JSONObject json  = new JSONObject();
-        EditText edit = (EditText) findViewById(R.id.nameSignup);
-        json.accumulate("name", edit.getText().toString());
-        edit = (EditText) findViewById(R.id.emailSignup);
-        json.accumulate("email", edit.getText().toString());
-        edit = (EditText) findViewById(R.id.passwordSignup);
-        json.accumulate("password", edit.getText().toString());
-        edit = (EditText) findViewById(R.id.confirmSignup);
-        json.accumulate("password_confirmation", edit.getText().toString());
-        JSONObject main = new JSONObject();
-        main.accumulate("user", json);
-        */
-        JSONObject main = signupTest();
-        //Perform validation
-        String jsonstr = main.toString();
-        Log.i("JSON",jsonstr);
-        new PostUser().execute(jsonstr);
-    }
-        class PostUser extends AsyncTask<String, Void, String> {
-
-            //Util util = Util.getInstance();
-
-            @Override
-            protected String doInBackground(String... json) {
-                ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-                Log.i("Network info ", networkInfo.getState().toString());
-                if (networkInfo != null && networkInfo.isConnected()) {
-                    HttpURLConnection urlConnection = null;
-                    try {
-                        //Making connections
-                        URL url = new URL(util.url + "/signup");
-                        urlConnection = (HttpURLConnection) url.openConnection();
-                        Log.i("URl",url.toString());
-                        // Configuring headers
-                        urlConnection.setRequestProperty("Content-Type", "application/json");
-                        urlConnection.setDoOutput(true);
-                        urlConnection.setRequestMethod("POST");
-                        Log.i("Request method",urlConnection.getRequestMethod());
-                        //Writing to output stream
-                        OutputStreamWriter wr = new OutputStreamWriter(urlConnection.getOutputStream());
-                        wr.write(json[0]);
-                        wr.flush();
-                        // 250 Other invalid input(Client SIde)
-                        // 201 created
-                        //251 email exists
-                        int code = urlConnection.getResponseCode();
-                        //Log.i("Response",urlConnection.getResponseCode());
-                        urlConnection.disconnect();
-                        //TODO Elaborate Error handling in response at the client side
-                        if(code == 201)
-                            return "Account Created";
-                        else if (code == 250)
-                            return "Invalid Details";
-                        else if(code == 251)
-                            return "Email already exists";
-                        else return "Error in Sending Data. Try again later.";
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                            return "Something Bad happened. Try again later.";
-                    } finally {
-                        if (urlConnection != null) {
-                            urlConnection.disconnect();
-                        }
-                    }
-                }
-                else
-                    //Toast.makeText(getApplicationContext(),"Network Error",Toast.LENGTH_SHORT).show();
-                    return "heck Network COnnection";
             }
-            @Override
-            protected void onPostExecute(String result){
-                Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
-                // if (result == "Account Created") setContentView();
-                          }
-
-    }
-    public void signup(View view){
-        Log.i("VIEW", "setting signup view..");
-        // TODO Adapters for showing exepected data
-        setContentView(R.layout.signup);
-    }
-    public void createUserFile(View view){
-
-        EditText user_name = (EditText) findViewById(R.id.editText);
-        String name = user_name.getText().toString();
-        EditText pass = (EditText) findViewById(R.id.editText2);
-        String password =  pass.getText().toString();
-        //User user = new User(name,password);
-        //try {
-        //    FileOutputStream fos =openFileOutput("user.usr", Context.MODE_PRIVATE);
-        //    ObjectOutputStream oos = new ObjectOutputStream(fos);
-        //    oos.writeObject(user);
-        //}catch (Exception ex){
-        //    ex.printStackTrace();
-        //}
-        Intent intent = new Intent(this, CreateFile.class);
-        Button button = (Button) findViewById(R.id.confirmbutton);
-        String message = button.getText().toString();
-        intent.putExtra(Util.EXTRA_MESSAGE, message);
-        startActivity(intent);
-
-    }
-
+        }
+        }
 
     protected void onDestroy()
     {
@@ -270,4 +81,237 @@ public class ShowLogin extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    //Writes string json to the netowrk output Stream and returns the response or -1 in case of exceptions
+    //Throws IO exception
+    protected int getResponse(String json) throws IOException {
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo == null) return -1;
+        if (networkInfo.isConnected()) {
+            HttpURLConnection conn = null;
+            //Making connections
+            URL url = new URL(util.url + "/login");
+            conn = (HttpURLConnection) url.openConnection();
+            Log.i("URl", url.toString());
+            // Configuring headers
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            Log.i("Request method", conn.getRequestMethod());
+            //Writing to output stream
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+            wr.write(json);
+            wr.flush();
+            int code = conn.getResponseCode();
+            //Log.i("Response",urlConnection.getResponseCode());
+            conn.disconnect();
+            return code;
+        }
+            return -1;
+        }
+
+    // Method to take user to the game
+    protected void startGame(){
+        Log.i("GEN","Starting game");
+        Intent intent = new Intent(this, StartGame.class);
+        intent.putExtra(Util.EXTRA_MESSAGE, "Start Game Bitch");
+        startActivity(intent);
+    }
+
+    public void signup(View view){
+        Log.i("VIEW", "setting signup view..");
+        // TODO Adapters for showing exepected data
+        setContentView(R.layout.signup);
+    }
+
+    // Method called on pressing login
+    public void login(View view){
+        Log.i("VIEW", "setting login view..");
+        setContentView(R.layout.login);
+
+    }
+
+
+    private class LoginExisting extends Login{
+        @Override
+        protected void onPostExecute(String result){
+            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+            if (result == "Logged in") startGame();
+            else setContentView(R.layout.login_signup);
+        }
+    }
+
+
+
+
+
+//Method on submit from login page
+    public void authUser(View view) throws JSONException{
+        Log.i("VIEW", "Logged in");
+        //TODO Bring some validations to client Side
+        //Uncomment this while deploying
+
+        JSONObject json = new JSONObject();
+        json.accumulate("email",email = ((EditText) findViewById(R.id.emailLogin)).getText().toString());
+        json.accumulate("password",password = ((EditText) findViewById(R.id.passwordLogin)).getText().toString());
+        JSONObject main = new JSONObject();
+        main.accumulate("session",json);
+
+        //JSONObject main = loginTest();
+        //Client Side Validations
+        new Login().execute(main.toString());
+        //if (active_flag==1) startGame();
+    }
+
+    public class Login extends AsyncTask<String,Void,String> {
+        protected String doInBackground(String... json) {
+                try{
+                int code = getResponse(json[0]);
+                //TODO Elaborate Error handling in response at the client sid
+                if(code == 201)
+                    return "Logged in";
+                else if (code == 250)
+                    return "Invalid Details";
+                else if (code == -1)
+                    return "Check Network Connection";
+                else return "Error in Sending Data. Try again later.";
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return "Something Bad happened. Try again later.";
+                }
+        }
+
+
+        @Override
+        protected void onPostExecute(String result){
+            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+            if (result == "Logged in"){
+                try {
+                    writeFile();
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                }
+
+                //active_flag = 1;
+                startGame();
+            }
+            else setContentView(R.layout.login_signup);
+        }
+
+    }
+
+
+
+//Method on submit form signup page
+    public void createUser(View view) throws JSONException {
+
+        Log.i("VIEW", "Signing up...");
+        //Uncomment this on deploying
+
+        JSONObject json  = new JSONObject();
+        EditText edit = (EditText) findViewById(R.id.nameSignup);
+        json.accumulate("name", edit.getText().toString());
+        edit = (EditText) findViewById(R.id.emailSignup);
+        json.accumulate("email", email = edit.getText().toString());
+        edit = (EditText) findViewById(R.id.passwordSignup);
+        json.accumulate("password", password = edit.getText().toString());
+        edit = (EditText) findViewById(R.id.confirmSignup);
+        json.accumulate("password_confirmation", edit.getText().toString());
+        JSONObject main = new JSONObject();
+        main.accumulate("user", json);
+
+        //JSONObject main = signupTest();
+        //Perform validation
+        String jsonstr = main.toString();
+        Log.i("JSON",jsonstr);
+        new PostUser().execute(jsonstr);
+        //if (active_flag == 1) startGame();
+    }
+        class PostUser extends AsyncTask<String, Void, String> {
+
+            //Util util = Util.getInstance();
+
+            @Override
+            protected String doInBackground(String... json) {
+                    try {
+                        int code = getResponse(json[0]);
+                        //TODO Elaborate Error handling in response at the client side
+                        if(code == 201)
+                            return "Account Created";
+                        else if (code == 250)
+                            return "Invalid Details";
+                        else if(code == 251)
+                            return "Email already exists";
+                        else if(code == -1)
+                            return "Check Network Connection";
+                        else return "Error in Sending Data. Try again later.";
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return "Something Bad happened. Try again later.";
+                    }
+                }
+
+            @Override
+            protected void onPostExecute(String result) {
+                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+                if (result == "Account Created") {
+                    try {
+                        writeFile();
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    startGame();
+                    //active_flag = 1;
+                }
+                else setContentView(R.layout.login_signup);
+            }
+    }
+    //TODO Remove redundancies in PostUser and Login
+    //TODO Implement more effective JSON serializer
+    public void writeFile() throws JSONException, IOException {
+
+        //EditText user_name = (EditText) findViewById(R.id.editText);
+        //String name = user_name.getText().toString();
+        //EditText pass = (EditText) findViewById(R.id.editText2);
+        //String password =  pass.getText().toString();
+        //User user = new User(name,password);
+        //String json = "{ \"session\" : {\"email\" : \""+email+ "\" , \"password\" : \"" +password + "\" } }";
+        JSONObject json = new JSONObject();
+        json.accumulate("email",email);
+        json.accumulate("password", password);
+        FileOutputStream fos =openFileOutput("user.usr", Context.MODE_PRIVATE);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeUTF(new JSONObject().accumulate("session", json).toString());
+        oos.flush();
+
+        //Intent intent = new Intent(this, CreateFile.class);
+        //Button button = (Button) findViewById(R.id.confirmbutton);
+        //String message = button.getText().toString();
+        //intent.putExtra(Util.EXTRA_MESSAGE, message);
+        //startActivity(intent);
+
+    }
+
+    // Temp testing for signup
+    public JSONObject signupTest() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.accumulate("name","Keerthana");
+        json.accumulate("email",email = "keerukeerthana8@gmail.com");
+        json.accumulate("password",password = "foobars");
+        json.accumulate("password_confirmation", "foobars");
+        JSONObject main = new JSONObject();
+        main.accumulate("user", json);
+        return main;
+    }
+    // Temp testing for login
+    public JSONObject loginTest() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.accumulate("email", email = "keerukeerthana8@gmail.com");
+        json.accumulate("password", password = "foobars");
+        return new JSONObject().accumulate("session",json);
+    }
+
+
+
 }
