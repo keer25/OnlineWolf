@@ -3,16 +3,24 @@ module Server
    		KEEPALIVE_TIME = 15 # in seconds
     	def initialize(app)
 			@app = app
-			@clients = []
+			@wait_num = 0
+			@reception = []
 			Faye::WebSocket.load_adapter('thin')
 		end	
 
 		def call(env)
 			if Faye::WebSocket.websocket?(env)
-				ws = Faye::WebSocket.new(env)
+				ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME })
 				ws.on :open do |event|
-					Rails.logger.info "Websocket Open, #{ws.object_id}   the user count is #{User.count}"
-					@clients << ws	
+					#Room request is associated with the onopen event
+					Rails.logger.info "Websocket Open,  and #{ws.object_id}"
+					@reception << ws	
+					@wait_num += 1
+					#Assuming events are queued
+					if(@wait_num >= 8)
+						#code to start game and send stuff
+						Room.new(@clients)
+					
 				end
 				
 				ws.on :message do |event|
