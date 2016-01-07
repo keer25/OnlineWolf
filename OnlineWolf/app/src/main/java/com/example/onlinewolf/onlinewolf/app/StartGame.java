@@ -27,7 +27,7 @@ public class StartGame extends AppCompatActivity {
 
             }
 
-    protected void startSocket(View view){
+    public void startSocket(View view){
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -41,7 +41,7 @@ public class StartGame extends AppCompatActivity {
                 @Override
                 public void onMessage(String message) {
                     Log.i("WebSocket", "I received " + message);
-                    ((EditText) findViewById(R.id.SampleText)).setText(message);
+                    //((EditText) findViewById(R.id.SampleText)).setText(message);
                 }
 
                 @Override
