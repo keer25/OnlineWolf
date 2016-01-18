@@ -24,9 +24,9 @@ public class Util extends AppCompatActivity{
     public final static String EXTRA_MESSAGE = "com.example.onlinewolf.MESSAGE";
     //public static String url = "http://192.168.1.100:3000";
     //public static String url = "http://agile-cove-4656.herokuapp.com";
-    public static String url  = "http://10.22.63.139:3000";
+    public static String url  = "http://192.168.198.101:3000";
     //public static String urlw = "ws://192.168.1.100:3000";
     //public static String urlw = "ws://agile-cove-4656.herokuapp.com/";
-    public static String urlw = "ws://10.22.63.139:3000";
+    public static String urlw = "ws://192.168.198.101:3000";
 
 }

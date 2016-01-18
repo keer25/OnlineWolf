@@ -11,7 +11,7 @@ module Server
 
 		def call(env)
 			if Faye::WebSocket.websocket?(env)
-				ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME })
+				ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME })	
 				ws.on :open do |event|
 					#Room request is associated with the onopen event
 					Rails.logger.info "Websocket Open,  and #{ws.object_id}"
@@ -25,12 +25,13 @@ module Server
 						Room.new(@reception)
 						@reception = []
 					else
-						@reception.each do |client|
-							event = {}
-							event['event'] = "wait"
-							event['data'] = @wait_num
-							client.send(event.to_json )
-					  end
+						#@reception.each do |client|
+						#event = {}
+						#event['event'] = "wait"
+						#event['data'] = @wait_num.to_s
+						#	client.send(event.to_json )
+					  #end
+					  sender( @reception, 'wait',@wait_num.to_s )
 					end
 				end
 				

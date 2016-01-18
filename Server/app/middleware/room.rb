@@ -5,8 +5,11 @@ $wn = 2
 $vn = 4
 
 #Sends to each of the connection in the list the event
-def sender(list,event)
-	list.each { |ws| ws.send(event.to_json) }
+def sender(list,event,data)
+	eventjson = {}
+	eventjson['event'] = event
+	eventjson['data'] = data
+	list.each { |ws| ws.send(eventjson.to_json) }
 end
 class Room
 	attr_accessor :room_id, :vil, :wolves, :doc, :cop
@@ -20,19 +23,14 @@ class Room
 		#@no_of_players  = reception.length
 
 		#Sending assign task to client 
-		event = {}
-		event['event'] = 'assign'
-		event ['data'] = 'wolf'
-		sender(@wolves,event)
+		sender(@wolves,'assign','wolf')
 
-		event['data'] = 'doctor'
-		sender(@doc,event)
+		sender(@doc,'assign','doctor')
 
-    event['data'] = 'cop'
-		sender(@cop,event)
+    sender(@cop,'assign','cop')
 
-		event['data'] = 'villager'
-		sender(@vil,event)
+    sender(@vil,'assign','villager')
+
 
 	end
 end
