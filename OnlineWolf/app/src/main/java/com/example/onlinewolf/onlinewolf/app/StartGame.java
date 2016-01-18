@@ -11,7 +11,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.ws.DefaultWebSocketListener;
 import com.ning.http.client.ws.WebSocket;
+import com.ning.http.client.ws.WebSocketListener;
 import com.ning.http.client.ws.WebSocketTextListener;
 import com.ning.http.client.ws.WebSocketUpgradeHandler;
 
@@ -19,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 
 public class StartGame extends AppCompatActivity {
+    public static WebSocket ws = null;
     Util util = Util.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,13 @@ public class StartGame extends AppCompatActivity {
         setContentView(R.layout.activity_start_game);
 
             }
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if (ws != null)
+            ws.close();
+        android.os.Debug.stopMethodTracing();
+    }
 
     public void startSocket(View view){
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -37,8 +47,8 @@ public class StartGame extends AppCompatActivity {
         try {
             w = c.prepareGet(Util.urlw)
                     .execute(new WebSocketUpgradeHandler.Builder().build()).get();
-            WebSocket ws = w.addWebSocketListener(new WebSocketTextListener() {
-                @Override
+            ws = w.addWebSocketListener(new DefaultWebSocketListener() {
+                //@Override
                 public void onMessage(String message) {
                     Log.i("WebSocket", "I received " + message);
                     //((EditText) findViewById(R.id.SampleText)).setText(message);

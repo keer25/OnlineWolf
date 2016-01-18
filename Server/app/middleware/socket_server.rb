@@ -1,3 +1,4 @@
+require_relative 'room'
 module Server
 	class SocketServer 
    	KEEPALIVE_TIME = 15 # in seconds
@@ -10,7 +11,7 @@ module Server
 
 		def call(env)
 			if Faye::WebSocket.websocket?(env)
-				ws = Faye::WebSocket.new(env)
+				ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME })
 				ws.on :open do |event|
 					#Room request is associated with the onopen event
 					Rails.logger.info "Websocket Open,  and #{ws.object_id}"
@@ -19,11 +20,16 @@ module Server
 					
 					#Assuming events are queued
 					if @wait_num >= 8
-						#code to start game and send stuff
-						Room.new(@clients)
+						#code to start game and send stuff and clear the current reception
+						@wait_num = 0
+						Room.new(@reception)
+						@reception = []
 					else
 						@reception.each do |client|
-						client.send("#{wait_num}", :event=>"wait" )
+							event = {}
+							event['event'] = "wait"
+							event['data'] = @wait_num
+							client.send(event.to_json )
 					  end
 					end
 				end
@@ -37,6 +43,7 @@ module Server
 					Rails.logger.info "Closing the connection"
 					# Handle players leaving room and the game
 					@reception.delete(ws)
+					@wait_num -= 1
 					#Send an event for deleting 
 					ws = nil
 				end	
