@@ -1,0 +1,4 @@
+Event                         Data 
+
+Wait													Number of players currently in the reception
+Assign												Roles such as cop,wolf...

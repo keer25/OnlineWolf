@@ -10,7 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="START GAME"
-        android:id="@+id/startGame" />
+        android:id="@+id/startGame"
+        android:onClick="startSocket" />
 
     <Button
         android:layout_width="wrap_content"
